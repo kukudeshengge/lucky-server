@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb')
 
 const dbUrl = 'mongodb://localhost:27017'
-const dbName = 'data'
+const dbName = 'lucky'
 
 let db = null
 
