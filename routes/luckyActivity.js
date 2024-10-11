@@ -1,5 +1,14 @@
 const express = require('express')
-const { toError, toSuccess, getActivityStatus, shuffleArray, getRandomFromArray } = require('../utils')
+const {
+  toError,
+  toSuccess,
+  sleep,
+  getActivityStatus,
+  shuffleArray,
+  getRandomFromArray,
+  generateRandomCharacters
+} = require('../utils')
+const { verifyCode } = require('../utils/auth')
 const router = express.Router()
 const BigNumber = require('bignumber.js')
 const { isNumber } = require('../utils/type')
@@ -79,7 +88,8 @@ router.post('/activitySave', async (req, res) => {
       activityType: activityType || 1,
       startTime,
       endTime,
-      status
+      status,
+      code: generateRandomCharacters(4)
     })
     prizeList.forEach(item => item.activityId = activity.insertedId)
     for (let i = 0; i < prizeList.length; i++) {
@@ -138,9 +148,13 @@ router.get('/getActivityTypeList', async (req, res) => {
  */
 router.get('/startLucky', async (req, res) => {
   try {
-    const { activityId } = req.query
+    const { activityId, code } = req.query
     if (!ObjectId.isValid(activityId)) {
       return res.json(toError('活动id不规范'))
+    }
+    const pass = await verifyCode(activityId, code)
+    if (!pass) {
+      return res.json(toError('抽奖失败'))
     }
     const prizeModel = new Model('prize')
     const luckyRecordModel = new Model('luckyRecord')
@@ -159,6 +173,7 @@ router.get('/startLucky', async (req, res) => {
       const len = BigNumber(item.prizeRate).multipliedBy(BigNumber(`1${zero}`)).toNumber()
       jackpot.push(...new Array(len).fill(item))
     }
+    sleep(1500)
     // 打乱集合顺序
     const outOrderJackpot = shuffleArray(jackpot)
     // 获取中奖奖品
@@ -194,6 +209,5 @@ router.get('/getActivityLuckyRecord', async (req, res) => {
     res.json(toError(err.message))
   }
 })
-
 
 module.exports = router

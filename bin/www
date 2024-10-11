@@ -12,7 +12,7 @@ const http = require('http');
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '9876');
+const port = normalizePort('9876');
 app.set('port', port);
 
 /**
@@ -20,6 +20,7 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
+require('express-ws')(app, server);
 
 /**
  * Listen on provided port, on all network interfaces.

@@ -67,11 +67,20 @@ const shuffleArray = (array) => {
   return array // 返回打乱后的数组
 }
 
-
 function getRandomFromArray(arr) {
   if (!Array.isArray(arr) || arr.length === 0) return undefined;
   const randomIndex = Math.floor(Math.random() * arr.length);
   return arr[randomIndex];
+}
+
+function generateRandomCharacters(length) {
+  let result = '';
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }
 
 module.exports = {
@@ -80,5 +89,6 @@ module.exports = {
   sleep,
   getActivityStatus,
   shuffleArray,
-  getRandomFromArray
+  getRandomFromArray,
+  generateRandomCharacters
 }
